@@ -10,6 +10,9 @@ In order to replicate the microstimulation setup you need the following tools:
 - Hex key
 - ???
 
+## Wiring diagram
+![](https://i.imgur.com/Ibgtf0k.png)
+
 ## Material required
 |Animal component|Electrical component|Behavioural component|
 |--------|--------|--------|
@@ -28,17 +31,17 @@ Attache the headbar holder to the breadboard and connecting the lick detector to
 
 1. Place the headbar holder on the breadboard.
 2. Screw in the 6mm hex screws to fasten the headbar holder.
-
-![](https://i.imgur.com/TcHn0g0.jpg)
-
 3. Place the lick detector in front of the headbar holder.
-4. Connect the lick detector with the multitool at PIEZO IN.
-5. Connect Multitool TRIGGER OUT with the CED EVENT IN 0, using a BNC connector.
-6. Connect Multitool SOLENOID IN with the CED DIGITAL OUT 0, using a BNC connector.
-7. Connect Multitool SOLENOID OUT with the solenoid.
-8. Connect the tubing from the water container to the spout of the lick detector.
 
-![](https://i.imgur.com/k49P7KR.png)
+![](https://i.imgur.com/3TqnYgk.png)
+
+5. Connect the lick detector with the multitool at PIEZO IN.
+6. Connect Multitool TRIGGER OUT with the CED EVENT IN 0, using a BNC connector.
+7. Connect Multitool SOLENOID IN with the CED DIGITAL OUT 0, using a BNC connector.
+8. Connect Multitool SOLENOID OUT with the solenoid.
+9. Connect the tubing from the water container to the spout of the lick detector.
+
+![](https://i.imgur.com/F3Z5USW.png)
 
 If correctly configured you can now turn on the Multitool and gently tap the lick detector. There should be a light coming from TRIGGER OUT. If it doesn't try increasing the GAIN of the signal by turning the knob on the Multitool. 
 
