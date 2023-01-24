@@ -1,7 +1,7 @@
-# Notes on documenting the microstimulation setup
-This file is intended for documenting the (thought) process involved in developing a documentation for the microstimulation setup used in Doron et al., (2020); with some adaptations for video recordings. 
+# Microstimulation Setup
+This file is intended for documenting the process involved in developing the microstimulation setup used in Doron et al., (2020); with some adaptations for video recordings.The goal is to create a step-by-step documentation that provides sufficient information for a non-engineer (neuroscientist) to create, build, implement and do experiments on the setup. 
 
-The goal is to create a step-by-step documentation that provides sufficient information for a non-engineer (neuroscientist) to create, build, implement and do experiments on the setup. 
+The current implementation utilizes the intelligent laboratory interface from [Cambridge Electronic Design (CED)](https://ced.co.uk/products/spkovin) paired with their analyzing software SPIKE2. For running experiments.
 
 ## Description of the microstimulation setup
 The microstimulation setup can be subdivided into three compartments: animal, electrical and behavioural. Together, they allow the research of animal behaviour in response to electrical microstimulation.
@@ -31,40 +31,10 @@ All compartments put together create a setup that should roughly look like this.
 |IR light| Infrared (780nm) LED.|
 |UV light| UV (380nm) LED.|
 
-## Intended value of the project
-### Pains
-- Replicating an experimental setup is difficult. 
-- Design of a setup changes constantly.
-### Gains
-- Understandable guide for building the setup.
-- Database for available addons
-- Platform for common problems & ideas.
-
-
 ## Current state of the project
-The project is still very much in the research phase. As of 05-10-2022 the research involves developing understanding of OpenHardware through the OpenHardware Academy by TU delft and learning the basics of 3D printing.
+The project is in the development/research phase. Nevertheless, the current version should be applicable for building and running the experiment with CED 1401 and SPIKE2. Note that things like the camera holder, rod-connector or headbar holder can be found as 3D printable files from the [SimpleScienceSetup](https://github.com/mik-schutte/SimpleScienceSetup). As of 12-12-2022 developments include the replacement of SPIKE2 with [BPOD](https://sites.google.com/site/bpoddocumentation/?pli=1) to control the experiment. 
 
-The future of the project will depend on this knowledge to improve the design of the setup and design 3D holders.
+The future of the project holds implementations for probe recordings, 2P-imaging and widefield imaging.
 
-## Next steps
-|Priority| Features/ target specs|
-|--------|-------|
-|Must have| Document, flexible camera's, BPOD|
-|Should have| No-noise lick-detector, 3D-printed assecoires.
-|Could have| Implant
-
-### Minimum hardware design documentation:
-* Bill Of Material
-* Written build instructions
-* Images of build instructions
-* Instructions to verify correct functionality
-* Example uses of the product
-* Optional: Video of build instructions.
-
-### Project documentation
-* Current state of the project
-* Future plan of the project
-* How to contribute
-* Where to find what or ask for help
-
-From OpenHardware Academy
+## How to contribute 
+We are always looking for insightful people that want to help out making the microstimulation setup as efficient and animal-friendly as possible. Especially, implementations for different experiments are welcome. If you want to chip in with your skills send me an email with the things you want to work on together with some details about yourself.
