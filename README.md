@@ -38,3 +38,6 @@ The future of the project holds implementations for probe recordings, 2P-imaging
 
 ## How to contribute 
 We are always looking for insightful people that want to help out making the microstimulation setup as efficient and animal-friendly as possible. Especially, implementations for different experiments are welcome. If you want to chip in with your skills send me an email with the things you want to work on together with some details about yourself.
+
+## Acknowledgements
+The core team members are Mik Schutte (myself) and Jelte de Vries. Both of us are employed by the Humboldt University and PhD-students in the Larkum lab and are being supervised by Dr. Robert Sachdev. Primary development was performed by Dr. Guy Doron and transferred by Moritz Druke. Data-management and the supervision concerning open source is done by Dr. Julien Colomb. Lastly, we thank the Delft Open Hardware Academy for its many valuable lessons in designing, project management and hardware documentation.
