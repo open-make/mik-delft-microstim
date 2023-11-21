@@ -32,7 +32,7 @@ All compartments put together create a setup that should roughly look like this.
 |UV light| UV (380nm) LED.|
 
 ## Current state of the project
-The project is in the development/research phase. Nevertheless, the current version should be applicable for building and running the experiment with CED 1401 and SPIKE2. Note that things like the camera holder, rod-connector or headbar holder can be found as 3D printable files from the [SimpleScienceSetup](https://github.com/mik-schutte/SimpleScienceSetup). As of 12-12-2022 developments include the replacement of SPIKE2 with [BPOD](https://sites.google.com/site/bpoddocumentation/?pli=1) to control the experiment. 
+The project is in the development/research phase. Nevertheless, the current version should be applicable for building and running the experiment with CED 1401 and SPIKE2. Note that things like the camera holder, rod-connector or headbar holder can be found as 3D printable files from the [SimpleScienceSetup](https://github.com/mik-schutte/SimpleScienceSetup).
 
 The future of the project holds implementations for probe recordings, 2P-imaging and widefield imaging.
 
