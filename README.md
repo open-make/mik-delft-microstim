@@ -1,18 +1,38 @@
-# Microstimulation Setup
-This file is intended for documenting the process involved in developing the microstimulation setup used in Doron et al., (2020); with some adaptations for video recordings.The goal is to create a step-by-step documentation that provides sufficient information for a non-engineer (neuroscientist) to create, build, implement and do experiments on the setup. 
+# Hardware setup for the "Microstimulation" experiment 
 
-The current implementation utilizes the intelligent laboratory interface from [Cambridge Electronic Design (CED)](https://ced.co.uk/products/spkovin) paired with their analyzing software SPIKE2. For running experiments.
+This repository provides information to set up the "Microstimulation" experiment used in Matthew Larkum's lab, including both *a documentation package of the hardware, and the experimental protocol*  (the software used for data acquisition, which is part of the documentation package is indeed dependent on the protocol). 
+We will present here the he most recent version which was reworked to use Bpod (Schutte et al. in preparation), we will also refer to the original setup described in (Doron et al., 2020).
 
-## Description of the microstimulation setup
-The microstimulation setup can be subdivided into three compartments: animal, electrical and behavioural. Together, they allow the research of animal behaviour in response to electrical microstimulation.
+In that experiment, a *rodent* (usually a mice) is head fixed. It receives *neuronal stimulation* (electrical or via some light activated activator proteins) in the sensory cortex, and get rewarded by some liquid (water or sugary *water reward*). The animal usually learn to associate the stimulation with the reward and will lick the water tube upon stimulation. Different versions of the setup and the protocol exist.
 
-* The **animal compartment** consists of the headbar holder, the lick detector, the multitool, the solenoid, the tubing and the water container. Collectively, they allow for the restrainment of the animal and the correctly timed distribution of a water reward.
-* The **electrical compartment** is comprised of the stimulus isolator, the electrode, the electrode holder and the micromanipulater. Together, they are used to generate an electrical stimulation that's emitted through the electrode.
-* The **behavioural compartment** contains the cameras, the camera holders, the lenses, the infra-red and the UV-light. Collectively they allow for the recording of animal behaviour such as pupil dilation and whisker movement.
+## Current state of the project
+
+The hardware can be defined as a prototype, as most self-assemble setups in neurobiology labs. Most components are not open source, and expensive. Note that things like the camera holder, rod-connector or head-bar holder can be found as 3D printable files from the [SimpleScienceSetup](https://github.com/mik-schutte/SimpleScienceSetup) project.
+
+The current version uses Bpod technology and matlab scripts, while the original setup use CED 1401 and SPIKE2. 
+
+The goal of this repository is to provide a step-by-step dguide for a non-engineer (neuroscientist) to create, build, implement and do experiments on the setup.  The **future** of the project holds implementations for probe recordings, 2P-imaging and widefield imaging..
+
+
+## Overview of the microstimulation setup
+
+The microstimulation setup can be subdivided into several compartments:
+
+* The [base setup](10_basesetup/base_readme.md) base setup: The components needs to be brought together, everything needs to be grounded and vibration resistant,. The elements should be hooked to the computer with possibly a good time synchronisation.
+
+* The [animal restrains](11_animalrestrains/AR_readme.md): animal restraining and head fixation system.
+
+* The [water reward system](12_water-reward/WR_readme.md): the lick detector, the multitool, the solenoid, the tubing and the water container.
+* The [electrical compartment for stimulation and eventually recording](13_stimulation-recoding/stim_rec_readme.md): is comprised of the stimulus isolator, the electrode, the electrode holder and the micromanipulator. Together, they are used to generate an electrical stimulation that's emitted through the electrode.
+* The [camera compartment](14_videorecording/vid_r_readme.md) contains the cameras, the camera holders, the lenses, the infra-red and the UV-light. Collectively they allow for the recording of animal behaviour such as pupil dilation and whisker movement.
+
+
 
 All compartments put together create a setup that should roughly look like this. 
 
-![](https://i.imgur.com/2MDle4r.jpg)
+![Overview of the setup from the side and from above](pictures/microstim-overview.jpg)
+
+*Overview of the setup from the side and from above*
 
 ## Component description
 |Component|Description |
@@ -31,13 +51,15 @@ All compartments put together create a setup that should roughly look like this.
 |IR light| Infrared (780nm) LED.|
 |UV light| UV (380nm) LED.|
 
-## Current state of the project
-The project is in the development/research phase. Nevertheless, the current version should be applicable for building and running the experiment with CED 1401 and SPIKE2. Note that things like the camera holder, rod-connector or headbar holder can be found as 3D printable files from the [SimpleScienceSetup](https://github.com/mik-schutte/SimpleScienceSetup).
 
-The future of the project holds implementations for probe recordings, 2P-imaging and widefield imaging.
 
 ## How to contribute 
-We are always looking for insightful people that want to help out making the microstimulation setup as efficient and animal-friendly as possible. Especially, implementations for different experiments are welcome. If you want to chip in with your skills send me an email with the things you want to work on together with some details about yourself.
+
+If you have been reading until here, you can probably help us make this documentation better. Please contact us per email or via an issue in this repository, especially is you are using this documentation, if you have some comments or ideas for improvement, if you want to reuse this hardware for similar or dissimilar experiments or if you just want to say hello. 
+
 
 ## Acknowledgements
-The core team members are Mik Schutte (myself) and Jelte de Vries. Both of us are employed by the Humboldt University and PhD-students in the Larkum lab and are being supervised by Dr. Robert Sachdev. Primary development was performed by Dr. Guy Doron and transferred by Moritz Druke. Data-management and the supervision concerning open source is done by Dr. Julien Colomb. Lastly, we thank the Delft Open Hardware Academy for its many valuable lessons in designing, project management and hardware documentation.
+The core team members are Mik Schutte and Jelte de Vries. Both of us are employed by the Humboldt University and PhD-students in the Larkum lab and are being supervised by Dr. Robert Sachdev. Primary development was performed by Dr. Guy Doron and transferred by Moritz Druke. Data-management and the supervision concerning open source is done by Dr. Julien Colomb. Lastly, we thank the Delft Open Hardware Academy for its many valuable lessons in designing, project management and hardware documentation.
+
+
+

@@ -1,19 +1,23 @@
 # Build instructions
 
 ## Before you begin
+
 Please note the current state of the project.
 Currently, we are hard at work to make new developments for the microstimulation setup. This creates makes it difficult to keep all the documentation up-to-date. The first improvement is the conversion from CED to BPOD. With this transition the component that drives the setup will be adjusted. However, the instructions below work with the CED and Multitool as noted in the Bill of Materials.
 
 ## Tools required 
+
 In order to replicate the microstimulation setup you need the following tools:
 - Flat head screwdriver
 - Hex key
 - ???
 
 ## Wiring diagram
-![](https://i.imgur.com/Ibgtf0k.png)
+
+![](pictures/wiringdiagram_1.png)
 
 ## Material required
+
 |Animal component|Electrical component|Behavioural component|
 |--------|--------|--------|
 |6mm Breadboard| Stimulus isolator| Camera|
@@ -26,14 +30,15 @@ In order to replicate the microstimulation setup you need the following tools:
 | Water container/syringe|
 | BNC connector (x2)|
 
-## Animal component
+## Animal component and reward system
+
 Attache the headbar holder to the breadboard and connecting the lick detector to the multitool.
 
 1. Place the headbar holder on the breadboard.
 2. Screw in the 6mm hex screws to fasten the headbar holder.
 3. Place the lick detector in front of the headbar holder.
 
-![](https://i.imgur.com/3TqnYgk.png)
+![](pictures/build_animalrestraint.png)
 
 5. Connect the lick detector with the multitool at PIEZO IN.
 6. Connect Multitool TRIGGER OUT with the CED EVENT IN 0, using a BNC connector.
@@ -41,7 +46,7 @@ Attache the headbar holder to the breadboard and connecting the lick detector to
 8. Connect Multitool SOLENOID OUT with the solenoid.
 9. Connect the tubing from the water container to the spout of the lick detector.
 
-![](https://i.imgur.com/F3Z5USW.png)
+![](pictures/build_ced_multi.png
 
 If correctly configured you can now turn on the Multitool and gently tap the lick detector. There should be a light coming from TRIGGER OUT. If it doesn't try increasing the GAIN of the signal by turning the knob on the Multitool. 
 
@@ -49,6 +54,7 @@ Additionally, test if the solenoid is working by pressing the SOLENOID SETUP kno
 
 
 ## Electrical component
+
 Set up the micromanipulator, attach electrode holder to the manipulator, connect the stimulus isolator to the CED and optionally clamp the electrode with the electrode holder and connect to the stimulus isolator.
 
 1. Place your micromanipulator to the side of the headbar holder. Make sure that the holder can be reached by the manipulator. Note that an electrode will be attached and should safely hover over the headbar holder.
@@ -63,7 +69,8 @@ Set up the micromanipulator, attach electrode holder to the manipulator, connect
 
 If correctly connected you can try testing the electrical compartment. Turn on the stimulus isolator and switch AUDIO to and OUTPUT to on. Turn on the CED and open the SPIKE2 script. Place the electrode in saline together with the grounding (red) wire. The SPIKE2 script should allow you to give a stimulus. You should see a light at CED EVENT IN 1 as well as hear a beep from the stimulus isolator.
 
-## Behavioural component
+## Camera component
+
 Place the camera holders on the breadboard, mount the cameras to their holders and connect the cameras to the computer and the CED.
 
 1. Position the camera holders at the angle of interest. The distance from the headbar holder depends on your camera and it's lense. You can use this STL file for determining the best position.
