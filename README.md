@@ -1,17 +1,18 @@
 # Hardware setup for the "Microstimulation" experiment 
 
-This repository provides information to set up the "Microstimulation" experiment used in Matthew Larkum's lab, including both *a documentation package of the hardware, and the experimental protocol*  (the software used for data acquisition, which is part of the documentation package is indeed dependent on the protocol). 
-We will present here the he most recent version which was reworked to use Bpod (Schutte et al. in preparation), we will also refer to the original setup described in (Doron et al., 2020).
+This repository provides information to set up the "Microstimulation" experiment used in Matthew Larkum's lab, including both *a documentation package of the hardware, the experimental protocol, and the software used for data acquisition* 
+We will present here the most recent version which was reworked to use BPOD (Schutte et al. in preparation), we will also refer to the original setup described in (Doron et al., 2020).
 
-In that experiment, a *rodent* (usually a mice) is head fixed. It receives *neuronal stimulation* (electrical or via some light activated activator proteins) in the sensory cortex, and get rewarded by some liquid (water or sugary *water reward*). The animal usually learn to associate the stimulation with the reward and will lick the water tube upon stimulation. Different versions of the setup and the protocol exist.
+In the microstimulation experiment, a *rodent* (usually a mouse) is head fixed. It receives *Intracranial Direct Current stimulation (IDCS or microstimulation)* in the primary somatosensory barrel cortex (S1-BF). The goal of the task is to teach the animal to report the stimulus by licking a water spout during the response window. The animal usually learns to associate the stimulation with a sugar water (4% sucrose) reward and will lick the water tube upon stimulation. Different versions of the setup and the protocol exist. 
+
 
 ## Current state of the project
 
-The hardware can be defined as a prototype, as most self-assemble setups in neurobiology labs. Most components are not open source, and expensive. Note that things like the camera holder, rod-connector or head-bar holder can be found as 3D printable files from the [SimpleScienceSetup](https://github.com/mik-schutte/SimpleScienceSetup) project.
+The hardware can be defined as a prototype, as most self-assembled setups in neurobiology labs. Most components are not open source, and expensive. Note that things like the camera holder, rod-connector or head-bar holder can be found as 3D printable files from the [SimpleScienceSetup](https://github.com/mik-schutte/SimpleScienceSetup) project.
 
-The current version uses Bpod technology and matlab scripts, while the original setup use CED 1401 and SPIKE2. 
+The current version uses [BPOD](https://sanworks.io/shop/products.php?productFamily=bpod) technology and [MATLAB](mathworks.com/campaigns/products/trials.html?gclid=CjwKCAiAmsurBhBvEiwA6e-WPC8ymdKjoKsw-h0QvnPUYUxUiHMEaFBh7Eg0xaEl5rYMuemgdsWKdBoC2_kQAvD_BwE&ef_id=CjwKCAiAmsurBhBvEiwA6e-WPC8ymdKjoKsw-h0QvnPUYUxUiHMEaFBh7Eg0xaEl5rYMuemgdsWKdBoC2_kQAvD_BwE:G:s&s_kwcid=AL!8664!3!462958882966!e!!g!!matlab%20download&s_eid=ppc_10961695282&q=matlab+download&gad_source=1)  scripts, while the original setup used CED 1401 and SPIKE2. 
 
-The goal of this repository is to provide a step-by-step dguide for a non-engineer (neuroscientist) to create, build, implement and do experiments on the setup.  The **future** of the project holds implementations for probe recordings, 2P-imaging and widefield imaging..
+The goal of this repository is to provide a step-by-step guide for a non-engineer (neuroscientist) to create, build, implement and do experiments on the setup.  The **future** of the project holds implementations for probe recordings, 2P-imaging and widefield imaging..
 
 
 ## Overview of the microstimulation setup
