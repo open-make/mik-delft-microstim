@@ -1,4 +1,5 @@
 # Hardware setup for the "Microstimulation" experiment 
+<img src=pictures/repo_header.jpg alt=header width="800" style="float: middle;"/>
 
 This repository provides information to set up the "Microstimulation" experiment used in Matthew Larkum's lab, including both *a documentation package of the hardware, the experimental protocol, and the software used for data acquisition* 
 We will present here the most recent version which was reworked to use BPOD (Schutte et al. in preparation), we will also refer to the original setup described in (Doron et al., 2020).
@@ -34,8 +35,6 @@ The microstimulation setup can be subdivided into several compartments:
 All compartments put together create a setup that should roughly look like this. 
 
 ![Overview of the setup from the side and from above](pictures/microstim-overview.jpg)
-
-*Overview of the setup from the side and from above*
 
 
 ## Description of repository content
