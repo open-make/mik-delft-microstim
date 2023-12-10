@@ -1,0 +1,569 @@
+'MicrostimReportLarkumV4 -
+'********************** IMPORTANT *****************************************************
+'*        GD090115- change script to allow analog microstimulation                    *
+'*                                                                                    *                                                                     
+'**************************************************************************************
+
+
+var data%;								'Handle of new data file (Spike2 sets it to 0)
+var dupc%;
+var dupd%;								'Handle of duplicate data window
+var dup3;								'Duplicate of pipette recording on channel 3 with a DC remove filter applied
+var ExtracellChan%:=7;
+var dup32;								'Duplicate of marker channel 32 used in reward delivery and RTime plot
+var dupNanoStim;                        'GD 060709 - Duplicate channel 32 for trigger view of only nanostimulation conditions
+var xy%;								'Handle of XY plot
+var nLicks%;							'Number of licks
+var sTime;								'Time of last stimulus for reward procedure
+var rTime:= 1.2;						'Reaction time limit
+var cTime;								'Used in the idle routine
+var catchTime;
+var stim$;			                    'Holds a character indentifying the type of stimulus
+var nx%;                                'Number of presented stimuli
+var xTime;                              'Time of last stimulus for pseudorandomization procedure
+var i%;                                 'Counter
+var i,j;                                'Counters for Sin Waveform
+var IsCatch:=0;
+var IsRewarded:=0;
+var CatchHits:=0;
+var CatchMisses:=0;
+var CatchAborted:=0;
+var GuessingRate:=0;
+var CatchAll:=0;
+var CatchRate:=0;
+var microstimLevel:=1;
+var CurrInt$;
+var PrevInt$;
+var PrevMicrostim$;
+var PrevMicroHits$;
+var PrevCatchstim$;
+var PrevCatchHits$;
+var PrevMicroCode%[4];
+var PrevIntensCode%;
+var CatchTrialHit%:=0;
+var CatchCode%[4];
+var CatchStr$;
+var PairingStr$;
+
+var ThresholdInput;     'GD070709 - threshold for HCursor(1) for Spike Counting procedures
+var DropSizeLabel%;
+
+
+FilePathSet("C:\\Program Files\\CED\\Spike8\\scripts\\Spike2Data");
+
+'GD310709 - These lines guide the user to choose duration of drop size (in terms of valve opening values
+'DropSizeLabel%:=Interact("                                                        !!!!!!!!!!!!!!              Please Choose Drop Size Duration                 !!!!!!!!!!!!!!", 1023 ,0 , "10ms (7.5uL)" ,"8ms (6.7uL)" ,"6ms (7.1 uL)","Quit");
+
+'docase
+'case DropSizeLabel%=1 then      'case 8ms duration (4.2uL)
+'    if FileOpen("MicrostimReportLarkumV1_10.s2cx",6)<>0 then FileOpen("*.s2cx",6); endif;
+'case DropSizeLabel%=2 then      'case 12ms duration (6.7uL)
+'    if FileOpen("MicrostimReportLarkumV1_8.s2cx",6)<>0 then FileOpen("*.s2c",6); endif;
+'case DropSizeLabel%=3 then      'case 16ms duration (9.1uL)
+'    if FileOpen("MicrostimReportLarkumV1_6.s2cx",6)<>0 then FileOpen("*.s2c",6); endif;
+'case DropSizeLabel%=4 then      'Quit
+'    Halt;    
+'endcase;
+
+' GD220115 - New menu with more drop size choices
+'Set the variables above for initial values
+var ms6$:="(6 ms, 3.6 ul)";
+var ms7$:="(7 ms, 4.4 ul)";
+var ms8$:="(8 ms, 6 ul)";
+var ms10$:="(10 ms, 7 ul)";
+var ms12$:="(12 ms, 7.5 ul)";
+var RewardTitle$;
+
+DlgCreate("Please Choose Drop Size !!!");  'Start new dialog
+DlgButton(0,"Cancel");
+DlgButton(1,ms12$);
+DlgButton(2,ms10$);
+DlgButton(3,ms8$);    
+DlgButton(4,ms7$);    
+DlgButton(5,ms6$);
+
+DropSizeLabel% := DlgShow();    'ok% is 0 if user cancels,  variables updated if not
+'Message("Dialog result was %d", ok%);
+docase
+case DropSizeLabel%=5 then      'case 6ms duration
+    RewardTitle$:=ms6$;
+    if FileOpen("MicrostimReportLarkumV6_6.s2cx",6)<>0 then FileOpen("*.s2cx",6); endif;
+case DropSizeLabel%=4 then      'case 7ms duration
+    RewardTitle$:=ms7$;
+    if FileOpen("MicrostimReportLarkumV6_7.s2cx",6)<>0 then FileOpen("*.s2c",6);  endif;
+case DropSizeLabel%=3 then      'case 8ms duration 
+    RewardTitle$:=ms8$;
+    if FileOpen("MicrostimReportLarkumV6_8.s2cx",6)<>0 then FileOpen("*.s2c",6);  endif;
+case DropSizeLabel%=2 then      'case 10ms duration
+    RewardTitle$:=ms10$;    
+    if FileOpen("MicrostimReportLarkumV6_10.s2cx",6)<>0 then FileOpen("*.s2c",6); endif;
+case DropSizeLabel%=1 then      'case 12ms duration
+    RewardTitle$:=ms12$;    
+    if FileOpen("MicrostimReportLarkumV6_12.s2cx",6)<>0 then FileOpen("*.s2c",6);  endif;        
+case DropSizeLabel%=0 then      'Quit
+    Halt;    
+endcase;
+
+
+
+
+HideAll();                          'Hide all unwanted bars
+ToolbarVisible(1);					'Make toolbar visible always
+New%();								'Set up new sampling window
+DoToolbar();						'Do the toolbar
+RestoreAll();                       'Restore all bars
+Halt;
+
+func New%()							'New sampling window
+View(LogHandle());					'Make log view the current view
+EditSelectAll();					'Select all text in log view
+Window(0,80,100,100);				'Display it at the bottom of the screen
+WindowVisible(0);
+xTime:= 0;
+
+if xy%>0 then						
+  View(xy%);							
+  FileClose(0,-1);                   
+endif;
+
+if dupd%>0 then						
+   View(dupd%);
+   FileClose(0,-1);          
+endif;
+if data%>0 then						'If there is already a data view open...
+  View(data%);						'...close it
+  FileClose();                      'No point setting data% to 0...
+endif;
+
+
+
+
+
+'************************************************************************************************
+
+'GD230409 - Create main view
+data%:= FileNew(0,1);				'Open a new data file for sampling
+if data%<0 then Message("Unable to open new data file"); Halt endif;
+Window(0,0,100,50);					'Position data window
+'GD230409 - add filtered channel 3a with DC remove
+dup3:= ChanDuplicate(ExtracellChan%);	
+ChanShow(dup3);
+ChanProcessAdd(dup3,2,0.001);		'DC remove with tau of 1 ms
+XRange(0,11);
+ViewTrigger(0,1,0,0);				'Trigger display (every 10 s)
+YRange(3,-5,5);						'Extracellular trace
+YRange(dup3,-2.5,2.5);				'Units trace
+YRange(4,-5,0);						'Whisker trace
+ChanOrder(32,-1,dup3);				'Rearrange the order in which channels are plotted
+ChanOrder(dup3,1,ExtracellChan%);
+ChanOrder(5,-1,32);
+DrawMode(30,14,1);                  'GD200409 - change intensity marks to text marks
+ChanShow(12);
+
+dup32:= ChanDuplicate(32);	
+MarkMask(dup32,0);
+MarkMask(dup32,0,0,"c");			'Exclude catch trials (c mark) 
+dupc%:=ChanDuplicate(32);           'with catch trials (to count them)
+MarkMask(dupc%,0);
+
+
+
+'GD230409 - Create view of lick responses
+var cursor1;
+cursor1:= CursorNew();
+'GD230409 - Finds the first lick on channel 1 which register licks (14 - data points mode) 
+'from Cursor(0)+0.1 sec to Cursor(0)+1.2 sec
+CursorActive(cursor1,14,1,"Cursor(0)","Cursor(0)+1.2","Cursor(0)-0.1");
+'GD230409 - Plot that contains time of first licks for last few stimuli with a minimum allowed step of 0.25s (data point mode)
+xy%:= MeasureToXY(14,dup32,0.25);
+Window(75,50,100,100);
+WindowVisible(1);
+MeasureX(103,0,"Cursor(1)","Cursor(0)"); 'X-axis plots time of first lick relative to stimulus. 103 = time difference
+MeasureY(102,0,"Cursor(0)");		'Y-axis plots time of stimulus. 102 = time
+MeasureChan(1,"1stLicks",10);		'Channel 1 - tongue licks, Set title and number of points limit
+MeasureChan(0,"RcntLicks",10);	    'Replot the same points on a new channel (0)(in different color with new intensity) 
+MeasureX(102,0,"-0.15");			'Plot dummy values to get desired x-range. 102 = time
+MeasureY(102,0,"Cursor(0)");
+MeasureChan(0,"Dummy1",10);
+MeasureX(102,0,"1.25");				'Plot dummy values to get desired x-range	
+MeasureChan(0,"Dummy2",10);
+'ProcessTriggered(1.5,0,32,0,1);
+'GD230409 - Process lick channel automatically, with delay = 0 sec, mode = 0 to accumulate data, opt = 1- optimize result view,
+'last = 0- ignore length of time to process, leeay=1.25 - how close cursor(0) is to file end
+ProcessAuto(0,0,1,0,1.25);
+'Process(0,9999,0,1,0,2,1.5,0);
+XYDrawMode(1,2,7);					'Increase size of dots to 7
+XYDrawMode(2,2,7);                  'size of data points
+XYDrawMode(2,4,0);					'No lines
+XYDrawMode(3,2,0);					'Make dummy points invisible
+XYDrawMode(3,4,0);                  'lines invisible also
+XYDrawMode(4,2,0);					'Make dummy points invisible
+XYDrawMode(4,4,0);                  
+XYKey(1,0);							'Hide legend
+Grid(1);
+
+
+'FrontView(LogHandle());			'Bring the Log view to the front
+FrontView(data%);						'Bring the data view to the front
+'GD230409 - create trigered mode view (to see number of spikes after a stimulus)
+dupd%:= WindowDuplicate();			'Create a second view on a faster time scale
+Window(0,50,75,100);
+ViewTrigger(dup32,0,0,0);				'GD060709 Trigger display of Nanostimulation trials
+XRange(0,1.5);                      'GD070709 - changed xrange to 0.2
+ChanHide(-1);							'Only show units and juxtacellular current injection
+ChanShow(2,dup3,7);                     'GD070709 - Changed from Nano to DAC view
+WindowVisible(1);
+ToolbarEnable(3,0);					'Disable "Sample stop" button
+ToolbarEnable(2,1);					'Disable "Sample stop" button
+ToolbarText("Press SAMPLE START to commence sampling");
+return 1;
+end;
+
+proc DoToolbar()
+ToolbarSet(1,"&Quit",Quit%);		'Set up toolbar buttons
+ToolbarSet(2,"&Start", Start%);
+ToolbarSet(3,"&Stop", Stop%);
+ToolbarSet(4,"New &File", New%);
+ToolbarSet(5,"&Pair||Microstimulation",  SeqP%);
+ToolbarSet(6,"&Test||Microstimulation",  SeqT%);
+ToolbarSet(7,"&Mix||Microstimulation, Catch trials",  SeqM%);
+ToolbarSet(8,"&Reward " + RewardTitle$,  SeqR%);
+ToolbarSet(9,"N&O stim", SeqO%);
+ToolbarSet(10,"&Empty||Empty tube", SeqE%);
+ToolbarSet(11,"Current &Intensity||Take notes of current intensity", CurrIntDialog%);
+ToolbarSet(12,"&A Microstim test||1 microstim", SeqA%);
+'ToolbarSet(13,"Slow TTL Pulse 2Hz", SeqB%);
+'ToolbarSet(14,"200ms TTL Pulse", SeqC%);
+
+
+ToolbarEnable(3,0);					'Disable "Sample stop" button
+Toolbar("Press SAMPLE START to commence sampling", 1023); 'Wait here until quit
+end;
+
+func SeqM%()
+View(dupd%);
+XRange(0,1.5);                      'GD070709 - xrange 0.6 to include up to 400ms
+View(data%);
+WriteLastCurrInt();
+'nx%:= Input("Start with entry", nx%);
+SampleSeqVar(1,2);					'Set V1 to mixed juxta-, micro- and control stimulation
+SampleSeqVar(7,0);
+SampleSeqVar(8,0);
+SampleSeqVar(9,0);
+SampleSeqVar(10,0);
+SampleSeqVar(11,0);
+SampleSeqVar(12,0);
+CatchTrialHit%:=0;
+nlicks%:= Count(1,0,Maxtime());	    'Initialize nlicks
+sTime:= LastTime(dup32,Maxtime());	'Initialize sTime 
+ToolbarSet(0,"",Idle%);				'Call Idle%() whenever there is free time
+'GD230409 - This sample key branches with same probability to the SampleSeqVar() variable 2 values with a poision delay
+SampleKey("Q");
+ToolbarText("TESTING randomly mixed control and microstimuli");
+SampleText("mix",-1);
+return 1;
+end;
+
+
+func SeqR%()
+View(data%);
+WriteLastCurrInt();
+ToolbarClear(0);						'Disable idle routine
+SampleKey("R");
+ToolbarText("WAITING");
+return 1;
+end;
+
+func SeqP%()
+View(data%);
+SampleSeqVar(9,0);
+ToolbarClear(0);						'Disable idle routine
+SampleKey("P");
+ToolbarText("Microstimulation PAIRING");
+SampleText("pairing",-1);
+return 1;
+end;
+
+
+'GD230409- test microstimulation responses
+func SeqT%()
+View(data%);
+WriteLastCurrInt();
+SampleSeqVar(1,0);					'Set V1 to microstimulation
+SampleSeqVar(7,0);
+SampleSeqVar(8,0);
+nlicks%:= Count(1,0,Maxtime());	'Initialize nlicks
+sTime:= LastTime(dup32,Maxtime());	'Initialize sTime 
+ToolbarSet(0,"",Idle%);				'Call Idle%() whenever there is free time
+SampleKey("T");
+ToolbarText("Microstimulation TESTING");
+SampleText("testing",-1);
+return 1;
+end;
+
+'GD230409- Go to waiting mode
+func SeqO%()
+View(data%);
+ToolbarClear(0);						'Disable idle routine
+SampleKey("O");
+ToolbarText("WAITING");
+WriteLastCurrInt();
+return 1;
+end;
+
+'GD230409- Empty water tube
+func SeqE%()
+View(data%);
+ToolbarClear(0);						'Disable idle routine
+SampleKey("E");
+ToolbarText("Emptying water tube");
+return 1;
+end;
+
+func SeqA%()
+View(data%);
+ToolbarClear(0);						'Disable idle routine
+SampleKey("A");
+ToolbarText("test 1 micrstim");
+return 1;
+end;
+
+func SeqB%()
+View(data%);
+ToolbarClear(0);						'Disable idle routine
+SampleKey("B");
+ToolbarText("Slow TTL Pulse 2Hz");
+return 1;
+end;
+
+func SeqC%()
+View(data%);
+ToolbarClear(0);						'Disable idle routine
+SampleKey("C");
+ToolbarText("200ms TTL Pulse");
+return 1;
+end;
+'GD230409- empty function
+func Control%()
+View(data%);
+SampleText("Control");
+return 1;
+end;
+
+'GD230409 - quit script after saving data
+func Quit%()							'If "Quit" is pressed
+SampleStop();							'Stop sampling
+View(xy%);							
+FileClose(0,-1);          
+View(dupd%);
+FileClose(0,-1);          
+View(data%);						
+FileClose();                   
+return 0;								'leave toolbar
+end;
+
+
+
+
+'GD070709 - This function sets the threshold of HCursor(1);
+func SetHCursorThershold%()
+View(data%);
+ThresholdInput:=Input("Please Enter threshold value between -10 to 10 mV",ThresholdInput,-10,10); 'Ask for input values between 0.1 to 10 mV
+HCursor(1, ThresholdInput, dup3);                                                     'Set Hcursor to selected value
+return 1;
+end;
+
+
+
+'GD090115
+func SeqH%()
+View(dupd%);
+XRange(0,0.004);                      'GD070709 - changed xrange to 0.6 instead of 1.0 
+View(data%);
+SampleKey("H");
+ToolbarText("enter new text here");
+return 1;
+end;
+
+
+func CurrIntDialog%()
+'Generated dialog script
+'Declare variables:
+var ok%,item1%,item2$,item3%,item4%,item5%,item6%,item7%;
+var CurrText$;
+var cd%[4];
+var IntensCode%;
+'Set the variables above for initial values
+
+repeat
+
+    DlgCreate("Current Inensity: " + CurrInt$+"uA");  'Start new dialog
+    DlgButton(0,"Cancel");
+    DlgButton(1,"&OK");
+    DlgString(2,"Insert &Current",3);    
+  
+    
+ok% := DlgShow(item1%,item2$);',item3%,item4%,item5%,item6%,item7%);    'ok% is 0 if user cancels,  variables updated if not
+'Message("Dialog result was %d", ok%);
+docase
+    case ok%=1 then
+        WriteLastCurrInt();
+        IntensCode%:=GetIntensCode%(item2$);
+        cd%[0]:= IntensCode%;
+        SampleSeqVar(7,0);
+        SampleSeqVar(8,0);
+        SampleText("Current Intensity " + item2$ + "uA",-1,cd%[]);
+        CurrInt$:=item2$;
+    endcase;
+
+until ok%=0 or ok%=1;
+return 1;
+end;
+
+func GetIntensCode%(item2$)
+var ReturnCode%;
+docase
+    case item2$="200" then ReturnCode%:=200;
+    case item2$="180" then ReturnCode%:=180;    
+    case item2$="160" then ReturnCode%:=160;
+    case item2$="140" then ReturnCode%:=140;
+    case item2$="120" then ReturnCode%:=120; 
+    case item2$="100" then ReturnCode%:=100;
+    case item2$="90" then  ReturnCode%:=90;
+    case item2$="80" then  ReturnCode%:=80;
+    case item2$="70" then  ReturnCode%:=70;
+    case item2$="60" then  ReturnCode%:=60;
+    case item2$="50" then  ReturnCode%:=50;
+    case item2$="45" then  ReturnCode%:=45;
+    case item2$="40" then  ReturnCode%:=40;
+    case item2$="35" then  ReturnCode%:=35;
+    case item2$="30" then  ReturnCode%:=30;
+    case item2$="25" then  ReturnCode%:=25;
+    case item2$="20" then  ReturnCode%:=20;
+    case item2$="18" then  ReturnCode%:=18;
+    case item2$="16" then  ReturnCode%:=16;
+    case item2$="15" then  ReturnCode%:=16;    
+    case item2$="14" then  ReturnCode%:=14;   
+    case item2$="12" then  ReturnCode%:=12;   
+    case item2$="10" then  ReturnCode%:=10;   
+    case item2$="9" then  ReturnCode%:=9;   
+    case item2$="8" then  ReturnCode%:=8;   
+    case item2$="7" then  ReturnCode%:=7; 
+    case item2$="6" then  ReturnCode%:=6;   
+    case item2$="5" then  ReturnCode%:=5;
+    case item2$="4" then  ReturnCode%:=4;
+    case item2$="3" then  ReturnCode%:=3;
+    case item2$="2" then  ReturnCode%:=2;
+endcase;
+return ReturnCode%;
+end;
+
+
+proc WriteLastCurrInt()
+PrevInt$:=CurrInt$;
+PrevMicrostim$:=Str$(SampleSeqVar(8));
+PrevMicroHits$:=Str$(SampleSeqVar(7));
+PrevIntensCode%:=GetIntensCode%(PrevInt$);
+PrevMicroCode%[0]:=PrevIntensCode%;
+SampleText(PrevInt$+ " " + PrevMicroHits$+"/" + PrevMicrostim$ + PairingStr$,-1,PrevMicroCode%[]);
+end;
+
+    'GD230409- Start function which initialies variables and start sampling procedure.
+func Start%()							'If "Start" is pressed
+sTime:= 0;                       'set start of anaylsis time
+nLicks%:= 0;
+SampleSeqVar(9,0);              'zero pairing counter
+SampleWrite(1);						'Write data to file for all channels
+SampleStart();							'Start sampling
+ToolbarEnable(4,0);					'Disable "New file" button
+ToolbarEnable(3,1);					'Enable "Sample stop" button
+ToolbarEnable(2,0);					'Disable "Sample start" button
+ToolbarEnable(1,0);					'Disable "Quit" button
+ToolbarText("Press SAMPLE STOP to stop sampling");
+SampleText("Reward "+RewardTitle$);
+return 1;								'Stay with toolbar
+end;
+
+'GD230409- Stop function which stops sampling and enable buttons for other options.
+func Stop%()							'If "Stop" is pressed
+WriteLastCurrInt();
+SampleStop();							'Stop sampling
+if (data%>0) and                 'if no data in file, stop will close it
+   (ViewKind(data%) <> 0) then data% := 0 endif;
+ToolbarEnable(4,1);					'Enable "New file" button
+ToolbarEnable(3,0);					'Disable "Sample stop" button
+ToolbarEnable(1,1);					'Enable "Quit" button
+ToolbarText("Press FILE NEW to capture more data");
+return 1;							'Stay in toolbar
+end;
+
+'GD230409- Idle function. This function runs when nothing else runs. It looks for new tongue licks all the time
+'If they are new tonge licks (on channel 1) using Count() from 0 to current time (cTime = MaxTime())
+'then it updates licks number.
+'If There is a new electrical stimulus on events channel up to current time (cTime)
+'And if it is in the bounderies of the response time (rTime = 1.2 sec)
+'Then update stimuli time (sTime) according to current stimuli
+'And if the lick was after 0.1s from begining of stimuli then reward rat with a drop of water (SampleKey("W").
+'then branch from it according to SampleSeqVar value that was initialized beforehand according to procedure.
+'
+func Idle%()						'Idle routine runs when system has time
+View(data%);                  	 
+
+cTime:= Maxtime();
+
+if Count(1,0,cTime) > nLicks% then	'New tongue lick
+    nlicks%:= Count(1,0,cTime);
+	if LastTime(dup32,cTime) > sTime then	'New electrical stimulus
+        if LastTime(1,cTime) < LastTime(dup32,cTime)+ rTime then	'Only licks within rTime seconds are rewarded
+            sTime:= LastTime(dup32,cTime);
+			if LastTime(1,cTime) > sTime+ 0.1 then 'Donot reward licks within 100 ms after stimulus onset 
+                SampleKey("W");
+            endif;
+            if LastTime(1,cTime)<= sTime+0.1 and LastTime(1,cTime)>= sTime + 0 then ' Aborted trials between 0 and 100ms
+                SampleSeqVar(8,SampleSeqVar(8)-1); ' don't count it as a trial
+            endif;
+		endif;
+	endif;
+endif;
+
+
+'GD230409 - Set a new stimulus type for Duration experiment.
+if LastTime(dup32,cTime) > xTime then  'Set the new stimulus type from pseudorandom table
+    xTime:= LastTime(dup32,cTime);
+    nx%:= nx%+ 1;
+    if nx% > 699 then                   'If the counter is out of range then initialize counter.
+        nx%:=0;
+        endif;
+    PrintLog(nx%);
+    
+endif;
+CatchStr$:=", Catch: " + Str$(SampleSeqVar(11))+"/" + Str$(SampleSeqVar(12));
+PairingStr$:=", Pairings: " + Str$(SampleSeqVar(9));
+ToolbarText("Curr Int: " + CurrInt$ + "uA," + " Microstim : " + Str$(SampleSeqVar(7))+"/" + Str$(SampleSeqVar(8))+ ", Prev Int: " + PrevInt$+ ", " + PrevMicroHits$ + "/" + PrevMicrostim$ + PairingStr$); '+ CatchStr$
+' Sample Sequencer Variable 5 is raised to 1 each time that a catch trial is coming on Key L
+' Variable 6 is a counter for all catch trials at the Key L
+' Variable 7 is a counter on Key F that marks only catch trial hits. Key W (reward) branches
+' to Key F only if Variable 5 = 0. Then it branches back to Key Q.
+
+    
+    
+
+return 1;								'Stay in toolbar
+end;
+
+'You can find this code in the App() on-line help.
+var gFloat%[20];              'global for floating window states
+proc HideAll()
+gFloat%[0] := App(-2);        'number of windows
+for i% := 1 to gFloat%[0] do  'hide all windows and save state
+   gFloat%[i%] := View(App(i%)).WindowVisible(0);
+   next;
+end
+
+proc RestoreAll()
+var i%;
+for i% := 1 to gFloat%[0] do  'restore hidden windows
+   View(App(i%)).WindowVisible(gFloat%[i%]);
+   next;
+end
+
