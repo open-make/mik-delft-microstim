@@ -5,10 +5,9 @@ Please take into account the current status of the project. We're actively worki
 
 
 ## Purpose
-The base setup serves as the foundation for the entire microstimulation experiment. Its primary functions include: minimize vibrations, ensuring a stable platform for the experiment. This stability is crucial for accurate data collection and the functionality of delicate equipment.
+The base setup serves as the foundation for the entire microstimulation experiment. Its primary functions to minimize vibrations, ensuring a stable platform for the experiment. This stability is crucial for accurate data collection and the functionality of delicate equipment.
 
-For stability, we employ a vibration table (XXX) with an accompanying xxx plate. Alternatively, tools from the [SimpleScienceSetup](https://github.com/mik-schutte/SimpleScienceSetup) can be utilized. Grounding is achieved by [describe grounding method].
-
+For stability, we employ a vibration isolation workstation with an accompanying optical breadboard. For prototyping your setup you can use tools from the [SimpleScienceSetup](https://github.com/mik-schutte/SimpleScienceSetup) as an alternative. We ground all components of the setup by connecting them to the building ground with low resistance braided copper wires. 
 
 The base setup acts as a platform for integrating and arranging the various compartments necessary for the experiment:
 
@@ -24,16 +23,16 @@ The base setup's strategic design and placement of these compartments ensure a c
 
 ## Necessary Tools
 
-To replicate the microstimulation setup, gather the following tools:
+To replicate the base microstimulation setup, you will need the following:
 
-- Airtable
-- Optical breadboard (6mm)
-- Grounding box
-- Surgical microscope
-- Flat head screwdriver
+- Vibration isolation workstation [Vision Isostation](https://www.newport.com/c/vision-isostations)
+- Optical breadboard (M6)
+- Thorlab rod (x2)
+- Micromanipulator(s)
+- Grounding box and wires
+- M6 hex key
 - 6mm hex screw (x2)
-- [Additional tool needed]
-
 
 ## Build instructions
 ![Animal Restraint Build](pictures/build_animalrestraint.png)
+image: table, table+breadboard, 
